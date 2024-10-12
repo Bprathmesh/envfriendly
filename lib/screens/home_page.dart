@@ -2,15 +2,18 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../services/notification_service.dart';
+import '../theme_notifier.dart';
 import 'login_page.dart';
 import 'search_kiosk_page.dart';
 import 'help_page.dart';
 import 'order_history_page.dart';
 import 'notifications_page.dart';
 import 'admin_elevation_dialog.dart';
-import 'admin_panel.dart'; 
+import 'admin_panel.dart';
+import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
   AppUser user;
@@ -77,30 +80,70 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
-void _showAdminElevationDialog() async {
-  final String correctAdminPassword = "admin123"; // You should store this securely
-  bool? result = await showDialog<bool>(
-    context: context,
-    builder: (context) => AdminElevationDialog(
-      user: widget.user,
-      correctAdminPassword: correctAdminPassword,
-    ),
-  );
+  void _showAdminElevationDialog() async {
+    final String correctAdminPassword = "admin123"; // You should store this securely
+    bool? result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AdminElevationDialog(
+        user: widget.user,
+        correctAdminPassword: correctAdminPassword,
+      ),
+    );
 
-  if (result == true) {
-    // Refresh the user object
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.user.id)
-        .get();
-    setState(() {
-      widget.user = AppUser.fromDocument(userDoc);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('You are now an admin!')),
+    if (result == true) {
+      // Refresh the user object
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.user.id)
+          .get();
+      setState(() {
+        widget.user = AppUser.fromDocument(userDoc);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You are now an admin!')),
+      );
+    }
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Settings'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('Dark Mode'),
+                trailing: Consumer<ThemeNotifier>(
+                  builder: (context, themeNotifier, child) {
+                    return Switch(
+                      value: themeNotifier.themeMode == ThemeMode.dark,
+                      onChanged: (bool value) {
+                        themeNotifier.toggleTheme();
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                ),
+              ),
+              // Add more settings options here
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
-}
+
   @override
   void dispose() {
     _leafController.dispose();
@@ -111,7 +154,7 @@ void _showAdminElevationDialog() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: _buildAppBar(),
       body: Stack(
         children: [
@@ -134,62 +177,88 @@ void _showAdminElevationDialog() async {
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      title: const Text(
-        'Rbuy',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.deepPurple,
-        ),
-      ),
-      actions: [_buildNotificationButton(), _buildLogoutButton()],
-    );
-  }
+AppBar _buildAppBar() {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  final iconColor = isDarkMode ? Colors.white : Colors.deepPurple;
 
-  Widget _buildNotificationButton() {
-    return Stack(
-      children: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.deepPurple),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const NotificationsPage()),
-            );
-          },
-        ),
-        if (_unreadNotifications > 0)
-          Positioned(
-            right: 8,
-            top: 8,
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              constraints: const BoxConstraints(
-                minWidth: 14,
-                minHeight: 14,
-              ),
-              child: Text(
-                '$_unreadNotifications',
-                style: const TextStyle(color: Colors.white, fontSize: 8),
-                textAlign: TextAlign.center,
-              ),
+  return AppBar(
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    elevation: 0,
+    title: Text(
+      'Rbuy',
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: iconColor,
+      ),
+    ),
+    actions: [
+      IconButton(
+        icon: Icon(Icons.person, color: iconColor),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
+          );
+        },
+      ),
+      _buildNotificationButton(iconColor),
+      IconButton(
+        icon: Icon(Icons.settings, color: iconColor),
+        onPressed: _showSettingsDialog,
+      ),
+      IconButton(
+        icon: Icon(Icons.logout, color: iconColor),
+        onPressed: () async {
+          await FirebaseAuth.instance.signOut();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        },
+      ),
+    ],
+  );
+}
+  
+ Widget _buildNotificationButton(Color iconColor) {
+  return Stack(
+    children: <Widget>[
+      IconButton(
+        icon: Icon(Icons.notifications, color: iconColor),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NotificationsPage()),
+          );
+        },
+      ),
+      if (_unreadNotifications > 0)
+        Positioned(
+          right: 8,
+          top: 8,
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            constraints: const BoxConstraints(
+              minWidth: 14,
+              minHeight: 14,
+            ),
+            child: Text(
+              '$_unreadNotifications',
+              style: const TextStyle(color: Colors.white, fontSize: 8),
+              textAlign: TextAlign.center,
             ),
           ),
-      ],
-    );
-  }
-
+        ),
+    ],
+  );
+}
   Widget _buildLogoutButton() {
     return IconButton(
-      icon: const Icon(Icons.logout, color: Colors.deepPurple),
+      icon: Icon(Icons.logout, color: Theme.of(context).primaryColor),
       onPressed: () async {
         await FirebaseAuth.instance.signOut();
         Navigator.of(context).pushReplacement(
@@ -230,7 +299,7 @@ void _showAdminElevationDialog() async {
         style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
-          color: Colors.deepPurple[700],
+          color: Theme.of(context).primaryColor,
         ),
       ),
     );
@@ -243,61 +312,62 @@ void _showAdminElevationDialog() async {
         builder: (context, child) {
           return Transform.rotate(
             angle: _leafAnimation.value * 2 * pi / 60,
-            child: const Icon(Icons.eco, size: 120, color: Colors.green),
+            child: Icon(Icons.eco, size: 120, color: Theme.of(context).primaryColor),
           );
         },
       ),
     );
   }
 
- Widget _buildActionButtons() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildActionButton(
-          icon: Icons.search,
-          label: 'Search for Kiosk',
-          color: Colors.deepPurple,
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage())),
-        ),
-        const SizedBox(height: 20),
-        _buildActionButton(
-          icon: Icons.help_outline,
-          label: 'Help',
-          color: Colors.deepPurple[400]!,
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpPage())),
-        ),
-        const SizedBox(height: 20),
-        _buildActionButton(
-          icon: Icons.history,
-          label: 'Order History',
-          color: Colors.deepPurple[300]!,
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryPage())),
-        ),
-        if (widget.user.isAdmin) ...[
+  Widget _buildActionButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildActionButton(
+            icon: Icons.search,
+            label: 'Search for Kiosk',
+            color: Colors.deepPurple,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage())),
+          ),
           const SizedBox(height: 20),
           _buildActionButton(
-            icon: Icons.admin_panel_settings,
-            label: 'Admin Panel',
-            color: Colors.red[400]!,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPanel(user: widget.user))),
+            icon: Icons.help_outline,
+            label: 'Help',
+            color: Colors.deepPurple[400]!,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpPage())),
           ),
-        ],
-        if (!widget.user.isAdmin) ...[
           const SizedBox(height: 20),
           _buildActionButton(
-            icon: Icons.admin_panel_settings,
-            label: 'Become an Admin',
-            color: Colors.deepPurple[200]!,
-            onPressed: _showAdminElevationDialog,
+            icon: Icons.history,
+            label: 'Order History',
+            color: Colors.deepPurple[300]!,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryPage())),
           ),
+          if (widget.user.isAdmin) ...[
+            const SizedBox(height: 20),
+            _buildActionButton(
+              icon: Icons.admin_panel_settings,
+              label: 'Admin Panel',
+              color: Colors.red[400]!,
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPanel(user: widget.user))),
+            ),
+          ],
+          if (!widget.user.isAdmin) ...[
+            const SizedBox(height: 20),
+            _buildActionButton(
+              icon: Icons.admin_panel_settings,
+              label: 'Become an Admin',
+              color: Colors.deepPurple[200]!,
+              onPressed: _showAdminElevationDialog,
+            ),
+          ],
         ],
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
+
   Widget _buildActionButton({required IconData icon, required String label, required VoidCallback onPressed, required Color color}) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -321,7 +391,7 @@ void _showAdminElevationDialog() async {
   Widget _buildQuoteCard() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.deepPurple[50],
+      color: Theme.of(context).primaryColor.withOpacity(0.1),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
         transitionBuilder: (Widget child, Animation<double> animation) {
@@ -342,7 +412,7 @@ void _showAdminElevationDialog() async {
           style: TextStyle(
             fontSize: 18,
             fontStyle: FontStyle.italic,
-            color: Colors.deepPurple[800],
+            color: Theme.of(context).primaryColor,
           ),
           textAlign: TextAlign.center,
         ),

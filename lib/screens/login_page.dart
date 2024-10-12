@@ -18,16 +18,20 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future<void> _login() async {
+  print("Login button pressed"); // Debug print
   if (_formKey.currentState!.validate()) {
     setState(() {
       _isLoading = true;
     });
 
     try {
+      print("Attempting to sign in with email: ${_emailController.text.trim()}"); // Debug print
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      print("User signed in successfully. UID: ${userCredential.user!.uid}"); // Debug print
 
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -35,19 +39,36 @@ class _LoginPageState extends State<LoginPage> {
           .get();
 
       if (userDoc.exists) {
+        print("User document found in Firestore"); // Debug print
         AppUser appUser = AppUser.fromDocument(userDoc);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
         );
       } else {
+        print("User document not found in Firestore"); // Debug print
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User data not found. Please contact support.')),
         );
       }
     } on FirebaseAuthException catch (e) {
-      // Handle Firebase Auth exceptions
+      print("FirebaseAuthException: ${e.code} - ${e.message}"); // Debug print
+      String errorMessage = 'An error occurred. Please try again.';
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found for that email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Wrong password provided for that user.';
+          break;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
     } catch (e) {
-      // Handle other exceptions
+      print("Unexpected error: $e"); // Debug print
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
+      );
     } finally {
       setState(() {
         _isLoading = false;
