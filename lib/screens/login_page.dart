@@ -1,15 +1,12 @@
-// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'user_model.dart';
+import '../models/user_model.dart';
 import 'signup_page.dart';
 import 'home_page.dart';
+import 'admin_panel.dart';  // You'll need to create this file for the admin panel
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -41,12 +38,18 @@ class _LoginPageState extends State<LoginPage> {
 
         if (userDoc.exists) {
           AppUser appUser = AppUser.fromDocument(userDoc);
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
-          );
+          if (appUser.isAdmin) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => AdminPanel(user: appUser)),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User data not found. Please contact support.')),
+            SnackBar(content: Text('User data not found. Please contact support.')),
           );
         }
       } on FirebaseAuthException catch (e) {
@@ -67,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
       } catch (e) {
         print('Error during login: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
+          SnackBar(content: Text('An unexpected error occurred. Please try again.')),
         );
       } finally {
         setState(() {
@@ -81,10 +84,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text('Login'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -92,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
@@ -106,10 +109,10 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
@@ -121,25 +124,25 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Login'),
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text('Login'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignUpPage()),
+                    MaterialPageRoute(builder: (context) => SignUpPage()),
                   );
                 },
-                child: const Text('Don\'t have an account? Sign up'),
+                child: Text('Don\'t have an account? Sign up'),
               ),
             ],
           ),

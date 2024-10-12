@@ -1,14 +1,10 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'user_model.dart';
+import '../models/user_model.dart';
 import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
-
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -18,7 +14,11 @@ class _SignUpPageState extends State<SignUpPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _adminPasswordController = TextEditingController();
   bool _isLoading = false;
+
+  // This should be stored securely, preferably on the server side
+  final String _actualAdminPassword = "admin123";
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
@@ -33,12 +33,15 @@ class _SignUpPageState extends State<SignUpPage> {
           password: _passwordController.text,
         );
 
+        bool isAdmin = _adminPasswordController.text == _actualAdminPassword;
+
         // Create AppUser instance
         AppUser newUser = AppUser(
           id: userCredential.user!.uid,
           name: _nameController.text,
           email: _emailController.text.trim(),
           createdAt: DateTime.now(),
+          isAdmin: isAdmin,
         );
 
         // Add user data to Firestore
@@ -52,7 +55,7 @@ class _SignUpPageState extends State<SignUpPage> {
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign up successful. Please log in.')),
+          SnackBar(content: Text('Sign up successful. Please log in.')),
         );
       } on FirebaseAuthException catch (e) {
         String errorMessage;
@@ -72,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
       } catch (e) {
         print('Error during sign up: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
+          SnackBar(content: Text('An unexpected error occurred. Please try again.')),
         );
       } finally {
         setState(() {
@@ -86,18 +89,17 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: Text('Sign Up'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Name',
                   border: OutlineInputBorder(),
                 ),
@@ -108,10 +110,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
@@ -125,10 +127,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
@@ -143,14 +145,23 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _adminPasswordController,
+                decoration: InputDecoration(
+                  labelText: 'Admin Password (optional)',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+              ),
+              SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _signUp,
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Sign Up'),
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text('Sign Up'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
             ],
