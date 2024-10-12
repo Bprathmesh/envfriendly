@@ -18,66 +18,43 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+  if (_formKey.currentState!.validate()) {
+    setState(() {
+      _isLoading = true;
+    });
 
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        AppUser appUser = AppUser.fromDocument(userDoc);
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
         );
-
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .get();
-
-        if (userDoc.exists) {
-          AppUser appUser = AppUser.fromDocument(userDoc);
-          if (appUser.isAdmin) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => AdminPanel(user: appUser)),
-            );
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User data not found. Please contact support.')),
-          );
-        }
-      } on FirebaseAuthException catch (e) {
-        String errorMessage;
-        switch (e.code) {
-          case 'user-not-found':
-            errorMessage = 'No user found for that email.';
-            break;
-          case 'wrong-password':
-            errorMessage = 'Wrong password provided for that user.';
-            break;
-          default:
-            errorMessage = 'An error occurred. Please try again.';
-        }
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
+          const SnackBar(content: Text('User data not found. Please contact support.')),
         );
-      } catch (e) {
-        print('Error during login: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
       }
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase Auth exceptions
+    } catch (e) {
+      // Handle other exceptions
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

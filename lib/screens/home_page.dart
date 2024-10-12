@@ -9,9 +9,11 @@ import 'search_kiosk_page.dart';
 import 'help_page.dart';
 import 'order_history_page.dart';
 import 'notifications_page.dart';
+import 'admin_elevation_dialog.dart';
+import 'admin_panel.dart'; 
 
 class HomePage extends StatefulWidget {
-  final AppUser user;
+  AppUser user;
 
   HomePage({required this.user});
 
@@ -57,7 +59,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _scheduleQuoteChange() {
-    Future.delayed(Duration(seconds: 10), _changeQuote);
+    Future.delayed(const Duration(seconds: 10), _changeQuote);
   }
 
   void _changeQuote() {
@@ -75,6 +77,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
+void _showAdminElevationDialog() async {
+  final String correctAdminPassword = "admin123"; // You should store this securely
+  bool? result = await showDialog<bool>(
+    context: context,
+    builder: (context) => AdminElevationDialog(
+      user: widget.user,
+      correctAdminPassword: correctAdminPassword,
+    ),
+  );
+
+  if (result == true) {
+    // Refresh the user object
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user.id)
+        .get();
+    setState(() {
+      widget.user = AppUser.fromDocument(userDoc);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('You are now an admin!')),
+    );
+  }
+}
   @override
   void dispose() {
     _leafController.dispose();
@@ -112,7 +138,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      title: Text(
+      title: const Text(
         'Rbuy',
         style: TextStyle(
           fontSize: 24,
@@ -128,11 +154,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Stack(
       children: <Widget>[
         IconButton(
-          icon: Icon(Icons.notifications, color: Colors.deepPurple),
+          icon: const Icon(Icons.notifications, color: Colors.deepPurple),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NotificationsPage()),
+              MaterialPageRoute(builder: (context) => const NotificationsPage()),
             );
           },
         ),
@@ -141,18 +167,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             right: 8,
             top: 8,
             child: Container(
-              padding: EdgeInsets.all(2),
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 color: Colors.red,
                 borderRadius: BorderRadius.circular(6),
               ),
-              constraints: BoxConstraints(
+              constraints: const BoxConstraints(
                 minWidth: 14,
                 minHeight: 14,
               ),
               child: Text(
                 '$_unreadNotifications',
-                style: TextStyle(color: Colors.white, fontSize: 8),
+                style: const TextStyle(color: Colors.white, fontSize: 8),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -163,7 +189,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildLogoutButton() {
     return IconButton(
-      icon: Icon(Icons.logout, color: Colors.deepPurple),
+      icon: const Icon(Icons.logout, color: Colors.deepPurple),
       onPressed: () async {
         await FirebaseAuth.instance.signOut();
         Navigator.of(context).pushReplacement(
@@ -181,11 +207,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 _buildWelcomeText(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 _buildAnimatedEcoIcon(),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 _buildActionButtons(),
               ],
             ),
@@ -217,49 +243,66 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         builder: (context, child) {
           return Transform.rotate(
             angle: _leafAnimation.value * 2 * pi / 60,
-            child: Icon(Icons.eco, size: 120, color: Colors.green),
+            child: const Icon(Icons.eco, size: 120, color: Colors.green),
           );
         },
       ),
     );
   }
 
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+ Widget _buildActionButtons() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildActionButton(
+          icon: Icons.search,
+          label: 'Search for Kiosk',
+          color: Colors.deepPurple,
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage())),
+        ),
+        const SizedBox(height: 20),
+        _buildActionButton(
+          icon: Icons.help_outline,
+          label: 'Help',
+          color: Colors.deepPurple[400]!,
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpPage())),
+        ),
+        const SizedBox(height: 20),
+        _buildActionButton(
+          icon: Icons.history,
+          label: 'Order History',
+          color: Colors.deepPurple[300]!,
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryPage())),
+        ),
+        if (widget.user.isAdmin) ...[
+          const SizedBox(height: 20),
           _buildActionButton(
-            icon: Icons.search,
-            label: 'Search for Kiosk',
-            color: Colors.deepPurple,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage())),
-          ),
-          SizedBox(height: 20),
-          _buildActionButton(
-            icon: Icons.help_outline,
-            label: 'Help',
-            color: Colors.deepPurple[400]!,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HelpPage())),
-          ),
-          SizedBox(height: 20),
-          _buildActionButton(
-            icon: Icons.history,
-            label: 'Order History',
-            color: Colors.deepPurple[300]!,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryPage())),
+            icon: Icons.admin_panel_settings,
+            label: 'Admin Panel',
+            color: Colors.red[400]!,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPanel(user: widget.user))),
           ),
         ],
-      ),
-    );
-  }
-
+        if (!widget.user.isAdmin) ...[
+          const SizedBox(height: 20),
+          _buildActionButton(
+            icon: Icons.admin_panel_settings,
+            label: 'Become an Admin',
+            color: Colors.deepPurple[200]!,
+            onPressed: _showAdminElevationDialog,
+          ),
+        ],
+      ],
+    ),
+  );
+}
   Widget _buildActionButton({required IconData icon, required String label, required VoidCallback onPressed, required Color color}) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         elevation: 5,
       ),
@@ -268,8 +311,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: Colors.white),
-          SizedBox(width: 12),
-          Text(label, style: TextStyle(color: Colors.white, fontSize: 18)),
+          const SizedBox(width: 12),
+          Text(label, style: const TextStyle(color: Colors.white, fontSize: 18)),
         ],
       ),
     );
@@ -277,7 +320,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildQuoteCard() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       color: Colors.deepPurple[50],
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
@@ -336,7 +379,6 @@ class OrbitalPainter extends CustomPainter {
         paint,
       );
 
-      // Draw pulsating circles at the end of each arc
       final endAngle = startAngle + sweepAngle;
       final endPoint = Offset(
         center.dx + radius * cos(endAngle),

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
@@ -6,7 +8,7 @@ import 'login_page.dart';
 class AdminPanel extends StatefulWidget {
   final AppUser user;
 
-  AdminPanel({required this.user});
+  const AdminPanel({super.key, required this.user});
 
   @override
   _AdminPanelState createState() => _AdminPanelState();
@@ -30,7 +32,7 @@ class _AdminPanelState extends State<AdminPanel> {
         'read': false,
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Notification sent successfully')),
+        const SnackBar(content: Text('Notification sent successfully')),
       );
       _notificationController.clear();
     }
@@ -40,10 +42,10 @@ class _AdminPanelState extends State<AdminPanel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Panel'),
+        title: const Text('Admin Panel'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseFirestore.instance.collection('users').doc(widget.user.id).update({
                 'lastLogout': FieldValue.serverTimestamp(),
@@ -62,14 +64,14 @@ class _AdminPanelState extends State<AdminPanel> {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'Welcome, ${widget.user.name}!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: _notificationController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Send Notification to All Users',
                 border: OutlineInputBorder(),
               ),
@@ -79,7 +81,7 @@ class _AdminPanelState extends State<AdminPanel> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
               onPressed: _sendNotification,
-              child: Text('Send Notification'),
+              child: const Text('Send Notification'),
             ),
           ),
           Expanded(
@@ -87,11 +89,11 @@ class _AdminPanelState extends State<AdminPanel> {
               stream: _usersStream,
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Center(child: Text('Something went wrong'));
+                  return const Center(child: Text('Something went wrong'));
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 return ListView(

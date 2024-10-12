@@ -1,8 +1,12 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductPage extends StatefulWidget {
+  const ProductPage({super.key});
+
   @override
   _ProductPageState createState() => _ProductPageState();
 }
@@ -60,7 +64,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
       appBar: AppBar(
         title: const Text('Select Product'),
         backgroundColor: Colors.deepPurple,
-        actions: [
+        actions: const [
           // IconButton(
           //   icon: const Icon(Icons.favorite),
           //   onPressed: _showOrderHistory,
@@ -229,13 +233,15 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
   void _showOrderHistory() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => OrderHistoryPage(),
+        builder: (context) => const OrderHistoryPage(),
       ),
     );
   }
 }
 
 class OrderHistoryPage extends StatelessWidget {
+  const OrderHistoryPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

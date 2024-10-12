@@ -3,11 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class OrderHistoryPage extends StatelessWidget {
+  const OrderHistoryPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order History'),
+        title: const Text('Order History'),
         backgroundColor: Colors.deepPurple,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -18,10 +20,10 @@ class OrderHistoryPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No order history'));
+            return const Center(child: Text('No order history'));
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,

@@ -5,7 +5,7 @@ class AppUser {
   final String name;
   final String email;
   final DateTime createdAt;
-  final bool isAdmin;
+  bool isAdmin;
 
   AppUser({
     required this.id,
@@ -33,5 +33,12 @@ class AppUser {
       'createdAt': Timestamp.fromDate(createdAt),
       'isAdmin': isAdmin,
     };
+  }
+
+  Future<void> updateAdminStatus(bool isAdmin) async {
+    await FirebaseFirestore.instance.collection('users').doc(id).update({
+      'isAdmin': isAdmin,
+    });
+    this.isAdmin = isAdmin;
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +7,8 @@ import '../models/user_model.dart';
 import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -97,7 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),  // Extra space at the top
-                Text(
+                const Text(
                   'Create Account',
                   style: TextStyle(
                     fontSize: 28,
@@ -120,7 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
-                    prefixIcon: Icon(Icons.person, color: Colors.purple),
+                    prefixIcon: const Icon(Icons.person, color: Colors.purple),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -140,7 +144,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: Colors.purple),
+                    prefixIcon: const Icon(Icons.email, color: Colors.purple),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -163,7 +167,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock, color: Colors.purple),
+                    prefixIcon: const Icon(Icons.lock, color: Colors.purple),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -187,7 +191,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: _adminPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Admin Password (optional)',
-                    prefixIcon: Icon(Icons.admin_panel_settings, color: Colors.purple),
+                    prefixIcon: const Icon(Icons.admin_panel_settings, color: Colors.purple),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -200,9 +204,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Sign Up'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: Colors.purple, // Purple button
@@ -210,6 +211,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Sign Up'),
                 ),
                 const SizedBox(height: 20),
                 Row(

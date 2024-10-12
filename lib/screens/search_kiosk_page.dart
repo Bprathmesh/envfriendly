@@ -48,7 +48,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Kiosks'),
+        title: const Text('Search Kiosks'),
         backgroundColor: Colors.deepPurple,
       ),
       body: Stack(
@@ -60,7 +60,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
               child: Stack(
                 children: [
                   ...circleRadii.map((radius) => _buildCircle(radius)),
-                  Center(
+                  const Center(
                     child: Icon(Icons.person, size: 50, color: Colors.deepPurple),
                   ),
                   ...kiosks.map((kiosk) => _buildKioskWidget(kiosk)).toList(),
@@ -68,7 +68,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
               ),
             ),
           ),
-          Positioned(
+          const Positioned(
             bottom: 20,
             left: 0,
             right: 0,
@@ -110,7 +110,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductPage()),
+                  MaterialPageRoute(builder: (context) => const ProductPage()),
                 );
               },
               child: Container(
@@ -120,7 +120,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
                   color: Colors.deepPurple.withOpacity(0.7),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.local_drink, color: Colors.white, size: 20),
+                child: const Icon(Icons.local_drink, color: Colors.white, size: 20),
               ),
             ),
           );
