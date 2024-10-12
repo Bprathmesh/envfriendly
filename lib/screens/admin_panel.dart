@@ -14,11 +14,26 @@ class AdminPanel extends StatefulWidget {
 
 class _AdminPanelState extends State<AdminPanel> {
   late Stream<QuerySnapshot> _usersStream;
+  final TextEditingController _notificationController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _usersStream = FirebaseFirestore.instance.collection('users').snapshots();
+  }
+
+  Future<void> _sendNotification() async {
+    if (_notificationController.text.isNotEmpty) {
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'message': _notificationController.text,
+        'timestamp': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Notification sent successfully')),
+      );
+      _notificationController.clear();
+    }
   }
 
   @override
@@ -30,7 +45,6 @@ class _AdminPanelState extends State<AdminPanel> {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
-              // Implement logout functionality
               await FirebaseFirestore.instance.collection('users').doc(widget.user.id).update({
                 'lastLogout': FieldValue.serverTimestamp(),
               });
@@ -49,6 +63,23 @@ class _AdminPanelState extends State<AdminPanel> {
             child: Text(
               'Welcome, ${widget.user.name}!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _notificationController,
+              decoration: InputDecoration(
+                labelText: 'Send Notification to All Users',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ElevatedButton(
+              onPressed: _sendNotification,
+              child: Text('Send Notification'),
             ),
           ),
           Expanded(
@@ -80,16 +111,6 @@ class _AdminPanelState extends State<AdminPanel> {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Implement functionality to add new user or perform admin action
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Admin action placeholder')),
-          );
-        },
-        child: Icon(Icons.add),
-        tooltip: 'Perform Admin Action',
       ),
     );
   }

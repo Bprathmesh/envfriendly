@@ -18,7 +18,7 @@ class Kiosk {
     return Kiosk(
       id: doc.id,
       name: data['name'] ?? '',
-      location: data['location'] ?? GeoPoint(0, 0),
+      location: data['location'] ?? const GeoPoint(0, 0),
       availableProducts: List<String>.from(data['availableProducts'] ?? []),
     );
   }
