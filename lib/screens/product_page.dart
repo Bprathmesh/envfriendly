@@ -1,33 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductPage extends StatefulWidget {
   @override
   _ProductPageState createState() => _ProductPageState();
 }
 
-class _ProductPageState extends State<ProductPage> {
+class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> allProducts = [
-    {'name': 'Liquid Detergent', 'price': 20, 'icon': Icons.water_drop},
-    {'name': 'Toothpaste', 'price': 35, 'icon': Icons.local_drink},
-    {'name': 'Handwash', 'price': 50, 'icon': Icons.local_bar},
-    {'name': 'Shampoo', 'price': 45, 'icon': Icons.coffee},
-    {'name': 'Toilet Cleaner', 'price': 30, 'icon': Icons.emoji_food_beverage},
-    {'name': 'Harpic', 'price': 40, 'icon': Icons.coffee_maker},
-    {'name': 'Shower Gel', 'price': 60, 'icon': Icons.battery_charging_full},
-    {'name': 'Red Harpic', 'price': 70, 'icon': Icons.blender},
-    {'name': 'Cleaning Liquid', 'price': 40, 'icon': Icons.air_sharp},
-    {'name': 'Lotion', 'price': 35, 'icon': Icons.ice_skating},
+    {'name': 'Water', 'price': 20, 'icon': Icons.water_drop},
+    {'name': 'Soda', 'price': 35, 'icon': Icons.local_drink},
+    {'name': 'Juice', 'price': 50, 'icon': Icons.local_bar},
+    {'name': 'Milk', 'price': 45, 'icon': Icons.coffee},
+    {'name': 'Tea', 'price': 30, 'icon': Icons.emoji_food_beverage},
+    {'name': 'Coffee', 'price': 40, 'icon': Icons.coffee_maker},
+    {'name': 'Energy Drink', 'price': 60, 'icon': Icons.battery_charging_full},
+    {'name': 'Smoothie', 'price': 70, 'icon': Icons.blender},
+    {'name': 'Lemonade', 'price': 40, 'icon': Icons.local_drink},
+    {'name': 'Iced Tea', 'price': 35, 'icon': Icons.ice_skating},
   ];
 
   List<Map<String, dynamic>> displayedProducts = [];
   final List<int> refillOptions = [100, 250, 500, 1000];
   TextEditingController searchController = TextEditingController();
+  Set<String> favorites = {};
 
   @override
   void initState() {
     super.initState();
-    displayedProducts = allProducts;
+    displayedProducts = List.from(allProducts);
+    _loadFavorites();
+  }
+
+  void _loadFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      favorites = prefs.getStringList('favorites')?.toSet() ?? {};
+    });
+  }
+
+  void _saveFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('favorites', favorites.toList());
   }
 
   void searchProducts(String query) {
@@ -45,6 +60,12 @@ class _ProductPageState extends State<ProductPage> {
       appBar: AppBar(
         title: const Text('Select Product'),
         backgroundColor: Colors.deepPurple,
+        actions: [
+          // IconButton(
+          //   icon: const Icon(Icons.favorite),
+          //   onPressed: _showOrderHistory,
+          // ),
+        ],
       ),
       body: Column(
         children: [
@@ -83,29 +104,61 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget _buildProductCard(Map<String, dynamic> product) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: () => _showRefillOptions(product),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(product['icon'], size: 50, color: Colors.deepPurple),
-            const SizedBox(height: 8),
-            Text(
-              product['name'],
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '₹${product['price']}',
-              style: const TextStyle(fontSize: 16, color: Colors.green),
-            ),
-          ],
-        ),
+  bool isFavorite = favorites.contains(product['name']);
+  return Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    child: InkWell(
+      onTap: () => _showRefillOptions(product),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              // Align product icon at the top
+              Align(
+                alignment: Alignment.topCenter,
+                child: Icon(product['icon'], size: 50, color: Colors.deepPurple),
+              ),
+              // Positioned widget for the favorite icon at the bottom-right
+              Positioned(
+                right: 8,  // Position it slightly from the right edge
+                bottom: 8, // Position it slightly from the bottom edge
+                child: IconButton(
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: () => _toggleFavorite(product['name']),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            product['name'],
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '₹${product['price']}',
+            style: const TextStyle(fontSize: 16, color: Colors.green),
+          ),
+        ],
       ),
-    );
+    ),
+  );
+}
+
+  void _toggleFavorite(String productName) {
+    setState(() {
+      if (favorites.contains(productName)) {
+        favorites.remove(productName);
+      } else {
+        favorites.add(productName);
+      }
+    });
+    _saveFavorites();
   }
 
   void _showRefillOptions(Map<String, dynamic> product) {
@@ -141,7 +194,7 @@ class _ProductPageState extends State<ProductPage> {
     FirebaseFirestore.instance.collection('orders').add({
       'product': product['name'],
       'amount': amount,
-      'price': (product['price'] * amount / 500).round(),
+      'price': (product['price'] * amount / 500).toDouble(),
       'timestamp': FieldValue.serverTimestamp(),
     }).then((_) {
       Navigator.of(context).pop(); // Close bottom sheet
@@ -170,6 +223,52 @@ class _ProductPageState extends State<ProductPage> {
           ],
         );
       },
+    );
+  }
+
+  void _showOrderHistory() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => OrderHistoryPage(),
+      ),
+    );
+  }
+}
+
+class OrderHistoryPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Order History'),
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('orders')
+            .orderBy('timestamp', descending: true)
+            .limit(10)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No order history'));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var order = snapshot.data!.docs[index];
+              return ListTile(
+                title: Text(order['product']),
+                subtitle: Text('${order['amount']} ml'),
+                trailing: Text('₹${order['price']}'),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
