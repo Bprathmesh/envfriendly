@@ -1,11 +1,13 @@
-// ignore_for_file: unused_element
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'order_history_page.dart';
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({super.key});
+  final String userId;
+
+  const ProductPage({Key? key, required this.userId}) : super(key: key);
 
   @override
   _ProductPageState createState() => _ProductPageState();
@@ -62,13 +64,13 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Product'),
+        title: Text(AppLocalizations.of(context)!.selectProduct),
         backgroundColor: Colors.deepPurple,
-        actions: const [
-          // IconButton(
-          //   icon: const Icon(Icons.favorite),
-          //   onPressed: _showOrderHistory,
-          // ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: _showOrderHistory,
+          ),
         ],
       ),
       body: Column(
@@ -78,7 +80,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                labelText: 'Search Products',
+                labelText: AppLocalizations.of(context)!.searchProducts,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25.0),
@@ -108,51 +110,49 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
   }
 
   Widget _buildProductCard(Map<String, dynamic> product) {
-  bool isFavorite = favorites.contains(product['name']);
-  return Card(
-    elevation: 4,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-    child: InkWell(
-      onTap: () => _showRefillOptions(product),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              // Align product icon at the top
-              Align(
-                alignment: Alignment.topCenter,
-                child: Icon(product['icon'], size: 50, color: Colors.deepPurple),
-              ),
-              // Positioned widget for the favorite icon at the bottom-right
-              Positioned(
-                right: 8,  // Position it slightly from the right edge
-                bottom: 8, // Position it slightly from the bottom edge
-                child: IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : Colors.grey,
-                  ),
-                  onPressed: () => _toggleFavorite(product['name']),
+    bool isFavorite = favorites.contains(product['name']);
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: () => _showRefillOptions(product),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Icon(product['icon'], size: 50, color: Colors.deepPurple),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            product['name'],
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '₹${product['price']}',
-            style: const TextStyle(fontSize: 16, color: Colors.green),
-          ),
-        ],
+                Positioned(
+                  right: 8,
+                  bottom: 8,
+                  child: IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                    ),
+                    onPressed: () => _toggleFavorite(product['name']),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              product['name'],
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '₹${product['price']}',
+              style: const TextStyle(fontSize: 16, color: Colors.green),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   void _toggleFavorite(String productName) {
     setState(() {
@@ -178,7 +178,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Select Refill Amount for ${product['name']}',
+                AppLocalizations.of(context)!.selectRefillAmount(product['name']),
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -196,6 +196,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
 
   void _placeOrder(Map<String, dynamic> product, int amount) {
     FirebaseFirestore.instance.collection('orders').add({
+      'userId': widget.userId,
       'product': product['name'],
       'amount': amount,
       'price': (product['price'] * amount / 500).toDouble(),
@@ -205,7 +206,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
       _showOrderConfirmation();
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error placing order: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.errorPlacingOrder(error.toString()))),
       );
     });
   }
@@ -215,11 +216,11 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Order Placed Successfully!'),
-          content: const Text('Please proceed to the kiosk to collect your order.'),
+          title: Text(AppLocalizations.of(context)!.orderPlaced),
+          content: Text(AppLocalizations.of(context)!.proceedToKiosk),
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -233,47 +234,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
   void _showOrderHistory() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const OrderHistoryPage(),
-      ),
-    );
-  }
-}
-
-class OrderHistoryPage extends StatelessWidget {
-  const OrderHistoryPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Order History'),
-        backgroundColor: Colors.deepPurple,
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('orders')
-            .orderBy('timestamp', descending: true)
-            .limit(10)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No order history'));
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var order = snapshot.data!.docs[index];
-              return ListTile(
-                title: Text(order['product']),
-                subtitle: Text('${order['amount']} ml'),
-                trailing: Text('₹${order['price']}'),
-              );
-            },
-          );
-        },
+        builder: (context) => OrderHistoryPage(userId: widget.userId),
       ),
     );
   }

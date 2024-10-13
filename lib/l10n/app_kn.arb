@@ -194,5 +194,17 @@
     "contactingSupport": "ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...",
     "@contactingSupport": {
       "description": "Message shown when contacting support"
-    }
-}
+    },
+    "noOrderHistory": "ನಿಮ್ಮ ಆದೇಶವನ್ನು ಹೊಂದಿದೆ",
+    "@noOrderHistory": {
+      "description": "Message shown when no order history is found"
+    },
+    "unknownProduct": "ಯಾವುದೇ ಉದ್ಯೋಗಿನ ಉದ್ಯೋಗ",
+    "@unknownProduct": {
+      "description": "Message shown when an unknown product is found"
+    },
+    "errorLoadingOrders": "ನಿಮ್ಮ ಆದೇಶವನ್ನು ಲೋಡಿಸಲು ಸಂಭವಿಸುತ್ತದೆ. ಪ್ರಯಾಸೆಗೆ ಪುನರಾವರ್ತಿಸಿ.",
+  "amount": "ಮೂಲಕ",
+  "date": "ದಿನಾಂಕ",
+  "price": "ಮೂಲಕ" 
+  }

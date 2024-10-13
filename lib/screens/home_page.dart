@@ -15,12 +15,13 @@ import 'notifications_page.dart';
 import 'admin_elevation_dialog.dart';
 import 'admin_panel.dart';
 import 'profile_page.dart';
+import 'product_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
-    AppUser user;
+  AppUser user;
 
-   HomePage({Key? key, required this.user}) : super(key: key);
+   HomePage({super.key, required this.user});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -338,7 +339,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             icon: Icons.search,
             label: AppLocalizations.of(context)!.searchForKiosk,
             color: Colors.deepPurple,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage())),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage(userId: widget.user.id))),
           ),
           const SizedBox(height: 20),
           _buildActionButton(
@@ -352,7 +353,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             icon: Icons.history,
             label: AppLocalizations.of(context)!.orderHistory,
             color: Colors.deepPurple[300]!,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryPage())),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => OrderHistoryPage(userId: widget.user.id)),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildActionButton(
+            icon: Icons.shopping_cart,
+            label: AppLocalizations.of(context)!.selectProduct,
+            color: Colors.deepPurple[200]!,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProductPage(userId: widget.user.id)),
+            ),
           ),
           if (widget.user.isAdmin) ...[
             const SizedBox(height: 20),
@@ -467,7 +481,8 @@ class OrbitalPainter extends CustomPainter {
       final circlePaint = Paint()
         ..color = Colors.deepPurple.withOpacity(0.5 + (0.5 * sin(animation * 2 * pi)))
         ..style = PaintingStyle.fill;
-        canvas.drawCircle(endPoint, 5.0 + (3.0 * sin(animation * 2 * pi)), circlePaint);
+
+      canvas.drawCircle(endPoint, 5.0 + (3.0 * sin(animation * 2 * pi)), circlePaint);
     }
   }
 

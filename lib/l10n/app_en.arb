@@ -194,5 +194,17 @@
     "contactingSupport": "Contacting support...",
     "@contactingSupport": {
       "description": "Message shown when contacting support"
-    }
+    },
+    "noOrderHistory": "No order history",
+    "@noOrderHistory": {
+      "description": "Message shown when no order history is found"
+    },
+    "unknownProduct": "Unknown product",
+    "@unknownProduct": {
+      "description": "Message shown when an unknown product is found"
+    },
+    "errorLoadingOrders": "Error loading orders. Please try again.",
+  "amount": "Amount",
+  "date": "Date",
+  "price": "Price"
   }

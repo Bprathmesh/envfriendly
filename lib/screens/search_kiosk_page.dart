@@ -1,8 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'product_page.dart';
 
 class SearchKioskPage extends StatefulWidget {
+  final String userId;
+
+  const SearchKioskPage({Key? key, required this.userId}) : super(key: key);
+
   @override
   _SearchKioskPageState createState() => _SearchKioskPageState();
 }
@@ -48,7 +53,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Kiosks'),
+        title: Text("searchKiosks"),
         backgroundColor: Colors.deepPurple,
       ),
       body: Stack(
@@ -68,13 +73,13 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 20,
             left: 0,
             right: 0,
             child: Center(
               child: Text(
-                'Fetching the kiosks near you...',
+                "fetchingKiosks",
                 style: TextStyle(fontSize: 18, color: Colors.deepPurple),
               ),
             ),
@@ -110,7 +115,7 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProductPage()),
+                  MaterialPageRoute(builder: (context) => ProductPage(userId: widget.userId)),
                 );
               },
               child: Container(
