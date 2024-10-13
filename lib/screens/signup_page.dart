@@ -55,7 +55,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
         // Navigate to login page after successful sign up
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sign up successful. Please log in.')),
@@ -224,7 +224,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
                         );
                       },
                       child: const Text(

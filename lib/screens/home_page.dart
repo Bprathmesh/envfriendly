@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, must_be_immutable
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,7 +86,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _showAdminElevationDialog() async {
-    final String correctAdminPassword = "admin123"; // You should store this securely
+    const String correctAdminPassword = "admin123"; // You should store this securely
     bool? result = await showDialog<bool>(
       context: context,
       builder: (context) => AdminElevationDialog(
@@ -137,7 +139,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   builder: (context, languageNotifier, child) {
                     return DropdownButton<String>(
                       value: languageNotifier.locale.languageCode,
-                      items: [
+                      items: const [
                         DropdownMenuItem(value: 'en', child: Text('English')),
                         DropdownMenuItem(value: 'kn', child: Text('ಕನ್ನಡ')),
                       ],
@@ -233,7 +235,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           onPressed: () async {
             await FirebaseAuth.instance.signOut();
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => LoginPage()),
+              MaterialPageRoute(builder: (context) => const LoginPage()),
             );
           },
         ),
@@ -301,7 +303,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildWelcomeText() {
+ Widget _buildWelcomeText() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Text(
@@ -309,26 +311,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Theme.of(context).primaryColor,
         ),
       ),
     );
   }
 
-  Widget _buildAnimatedEcoIcon() {
+
+    Widget _buildAnimatedEcoIcon() {
     return Center(
       child: AnimatedBuilder(
         animation: _leafAnimation,
         builder: (context, child) {
           return Transform.rotate(
             angle: _leafAnimation.value * 2 * pi / 60,
-            child: Icon(Icons.eco, size: 120, color: Theme.of(context).primaryColor),
+            child: Icon(
+              Icons.eco,
+              size: 120,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
+            ),
           );
         },
       ),
     );
   }
-
   Widget _buildActionButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -359,15 +369,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 20),
-          _buildActionButton(
-            icon: Icons.shopping_cart,
-            label: AppLocalizations.of(context)!.selectProduct,
-            color: Colors.deepPurple[200]!,
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProductPage(userId: widget.user.id)),
-            ),
-          ),
+         
           if (widget.user.isAdmin) ...[
             const SizedBox(height: 20),
             _buildActionButton(
@@ -411,10 +413,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildQuoteCard() {
+ Widget _buildQuoteCard() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Theme.of(context).primaryColor.withOpacity(0.1),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white.withOpacity(0.1)
+          : Theme.of(context).primaryColor.withOpacity(0.1),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
         transitionBuilder: (Widget child, Animation<double> animation) {
@@ -435,13 +439,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           style: TextStyle(
             fontSize: 18,
             fontStyle: FontStyle.italic,
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Theme.of(context).primaryColor,
           ),
           textAlign: TextAlign.center,
         ),
       ),
     );
   }
+
 }
 
 class OrbitalPainter extends CustomPainter {
@@ -462,7 +469,7 @@ class OrbitalPainter extends CustomPainter {
     for (int i = 0; i < 5; i++) {
       final radius = maxRadius * (0.3 + (i * 0.14));
       final startAngle = (animation * 2 * pi) + (i * pi / 5);
-      final sweepAngle = pi * 1.5;
+      const sweepAngle = pi * 1.5;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),

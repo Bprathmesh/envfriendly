@@ -106,3 +106,5 @@ lib/firebase_options.dart
 # Don't include any local Firebase configuration files
 firebase.json
 .firebaserc
+
+index.html

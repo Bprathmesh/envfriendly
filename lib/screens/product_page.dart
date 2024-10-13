@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'order_history_page.dart';
 
 class ProductPage extends StatefulWidget {
@@ -15,28 +16,41 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> allProducts = [
-    {'name': 'Water', 'price': 20, 'icon': Icons.water_drop},
-    {'name': 'Soda', 'price': 35, 'icon': Icons.local_drink},
-    {'name': 'Juice', 'price': 50, 'icon': Icons.local_bar},
-    {'name': 'Milk', 'price': 45, 'icon': Icons.coffee},
-    {'name': 'Tea', 'price': 30, 'icon': Icons.emoji_food_beverage},
-    {'name': 'Coffee', 'price': 40, 'icon': Icons.coffee_maker},
-    {'name': 'Energy Drink', 'price': 60, 'icon': Icons.battery_charging_full},
-    {'name': 'Smoothie', 'price': 70, 'icon': Icons.blender},
-    {'name': 'Lemonade', 'price': 40, 'icon': Icons.local_drink},
-    {'name': 'Iced Tea', 'price': 35, 'icon': Icons.ice_skating},
+    {'name': 'Water', 'price': 20, 'icon': Icons.water_drop, 'color': Colors.blue},
+    {'name': 'Soda', 'price': 35, 'icon': Icons.local_drink, 'color': Colors.brown},
+    {'name': 'Juice', 'price': 50, 'icon': Icons.local_bar, 'color': Colors.orange},
+    {'name': 'Milk', 'price': 45, 'icon': Icons.coffee, 'color': Colors.grey},
+    {'name': 'Tea', 'price': 30, 'icon': Icons.emoji_food_beverage, 'color': Colors.green},
+    {'name': 'Coffee', 'price': 40, 'icon': Icons.coffee_maker, 'color': Colors.brown[700]!},
+    {'name': 'Energy Drink', 'price': 60, 'icon': Icons.battery_charging_full, 'color': Colors.red},
+    {'name': 'Smoothie', 'price': 70, 'icon': Icons.blender, 'color': Colors.pink},
+    {'name': 'Lemonade', 'price': 40, 'icon': Icons.local_drink, 'color': Colors.yellow},
+    {'name': 'Iced Tea', 'price': 35, 'icon': Icons.ice_skating, 'color': Colors.teal},
   ];
 
   List<Map<String, dynamic>> displayedProducts = [];
   final List<int> refillOptions = [100, 250, 500, 1000];
   TextEditingController searchController = TextEditingController();
   Set<String> favorites = {};
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     displayedProducts = List.from(allProducts);
     _loadFavorites();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    searchController.dispose();
+    super.dispose();
   }
 
   void _loadFavorites() async {
@@ -76,7 +90,7 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
@@ -90,18 +104,29 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+            child: AnimationLimiter(
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: displayedProducts.length,
+                itemBuilder: (context, index) {
+                  return AnimationConfiguration.staggeredGrid(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    columnCount: 2,
+                    child: ScaleAnimation(
+                      child: FadeInAnimation(
+                        child: _buildProductCard(displayedProducts[index]),
+                      ),
+                    ),
+                  );
+                },
               ),
-              itemCount: displayedProducts.length,
-              itemBuilder: (context, index) {
-                return _buildProductCard(displayedProducts[index]);
-              },
             ),
           ),
         ],
@@ -119,34 +144,45 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Icon(product['icon'], size: 50, color: Colors.deepPurple),
-                ),
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Colors.grey,
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Center(
+                    child: Icon(
+                      product['icon'],
+                      size: 60,
+                      color: product['color'],
                     ),
-                    onPressed: () => _toggleFavorite(product['name']),
                   ),
-                ),
-              ],
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: IconButton(
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.grey,
+                      ),
+                      onPressed: () => _toggleFavorite(product['name']),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              product['name'],
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '₹${product['price']}',
-              style: const TextStyle(fontSize: 16, color: Colors.green),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(
+                    product['name'],
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '₹${product['price']}',
+                    style: const TextStyle(fontSize: 14, color: Colors.green),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -168,27 +204,44 @@ class _ProductPageState extends State<ProductPage> with TickerProviderStateMixin
   void _showRefillOptions(Map<String, dynamic> product) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.selectRefillAmount(product['name']),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          minChildSize: 0.2,
+          maxChildSize: 0.75,
+          expand: false,
+          builder: (_, controller) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.selectRefillAmount(product['name']),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: controller,
+                      itemCount: refillOptions.length,
+                      itemBuilder: (context, index) {
+                        final amount = refillOptions[index];
+                        return ListTile(
+                          title: Text('$amount ml'),
+                          trailing: Text('₹${(product['price'] * amount / 500).round()}'),
+                          onTap: () => _placeOrder(product, amount),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              ...refillOptions.map((amount) => ListTile(
-                    title: Text('$amount ml'),
-                    trailing: Text('₹${(product['price'] * amount / 500).round()}'),
-                    onTap: () => _placeOrder(product, amount),
-                  )),
-            ],
-          ),
+            );
+          },
         );
       },
     );

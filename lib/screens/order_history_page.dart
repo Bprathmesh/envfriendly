@@ -12,6 +12,10 @@ class OrderHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(AppLocalizations.of(context)!.orderHistory),
         backgroundColor: Colors.deepPurple,
       ),
@@ -35,15 +39,14 @@ class OrderHistoryPage extends StatelessWidget {
                   Text(
                     AppLocalizations.of(context)!.errorLoadingOrders,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      // This will trigger a rebuild of the StreamBuilder
                       (context as Element).markNeedsBuild();
                     },
-                    child: Text("retry"),
+                    child: Text(AppLocalizations.of(context)!.retry),
                   ),
                 ],
               ),
@@ -54,19 +57,58 @@ class OrderHistoryPage extends StatelessWidget {
             return Center(
               child: Text(
                 AppLocalizations.of(context)!.noOrderHistory,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             );
           }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var order = snapshot.data!.docs[index];
-              return _buildOrderTile(order, context);
-            },
+          int totalAmount = snapshot.data!.docs.fold(0, (sum, doc) => sum + (doc['amount'] as int? ?? 0));
+          double pollutionSaved = totalAmount * 0.01; // Assuming 0.01 kg of plastic saved per ml
+
+          return Column(
+            children: [
+              _buildPollutionSavedCard(context, pollutionSaved),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    var order = snapshot.data!.docs[index];
+                    return _buildOrderTile(order, context);
+                  },
+                ),
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildPollutionSavedCard(BuildContext context, double pollutionSaved) {
+    return Card(
+      margin: const EdgeInsets.all(16),
+      color: Colors.green[100],
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              AppLocalizations.of(context)!.pollutionSaved,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${pollutionSaved.toStringAsFixed(2)} kg',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context)!.plasticWasteSaved,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -88,16 +130,16 @@ class OrderHistoryPage extends StatelessWidget {
           children: [
             Text(
               productName,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('${AppLocalizations.of(context)!.amount}: $amount ml'),
                 Text(
                   '${AppLocalizations.of(context)!.price}: ₹${price.toStringAsFixed(2)}',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
                 ),
               ],
             ),
@@ -106,6 +148,11 @@ class OrderHistoryPage extends StatelessWidget {
                 '${AppLocalizations.of(context)!.date}: ${DateFormat('yyyy-MM-dd HH:mm').format(timestamp.toDate())}',
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
+            const SizedBox(height: 4),
+            Text(
+              '${AppLocalizations.of(context)!.plasticSaved}: ${(amount * 0.01).toStringAsFixed(2)} kg',
+              style: TextStyle(color: Colors.green[700], fontSize: 12, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
       ),

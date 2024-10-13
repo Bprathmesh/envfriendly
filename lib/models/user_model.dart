@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppUser {
   final String id;
-  final String name;
+  late final String name;
   final String email;
   final DateTime createdAt;
   bool isAdmin;

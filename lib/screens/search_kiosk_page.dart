@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, unnecessary_to_list_in_spreads
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -6,7 +8,7 @@ import 'product_page.dart';
 class SearchKioskPage extends StatefulWidget {
   final String userId;
 
-  const SearchKioskPage({Key? key, required this.userId}) : super(key: key);
+  const SearchKioskPage({super.key, required this.userId});
 
   @override
   _SearchKioskPageState createState() => _SearchKioskPageState();
@@ -53,13 +55,14 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("searchKiosks"),
+        
+        title: const Text("Search Kiosk" , style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.deepPurple,
       ),
       body: Stack(
         children: [
           Center(
-            child: Container(
+            child: SizedBox(
               width: 420,
               height: 420,
               child: Stack(
@@ -73,13 +76,13 @@ class _SearchKioskPageState extends State<SearchKioskPage> with TickerProviderSt
               ),
             ),
           ),
-          Positioned(
+          const Positioned(
             bottom: 20,
             left: 0,
             right: 0,
             child: Center(
               child: Text(
-                "fetchingKiosks",
+                "Showing Nearby Kiosks",
                 style: TextStyle(fontSize: 18, color: Colors.deepPurple),
               ),
             ),

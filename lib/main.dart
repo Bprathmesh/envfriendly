@@ -1,18 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:provider/provider.dart';
 import 'theme_notifier.dart';
 import 'screens/login_page.dart';
 import 'language_notifier.dart';
-import 'firebase_options.dart'; // Importing for default platform options
+import 'firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+// Conditional import for web
+import 'utils/web_url_strategy.dart' if (dart.library.io) 'utils/mobile_url_strategy.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setUrlStrategy(PathUrlStrategy()); // Set PathUrlStrategy for Flutter Web
+
+  // Use the conditionally imported function
+  configureApp();
 
   if (kIsWeb) {
     await Firebase.initializeApp(
@@ -27,7 +31,7 @@ void main() async {
     );
   } else {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform, // Initialize for non-web platforms
+      options: DefaultFirebaseOptions.currentPlatform,
     );
   }
 

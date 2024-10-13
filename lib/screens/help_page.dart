@@ -64,7 +64,7 @@ class HelpPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
               ),
               onPressed: () {
-                // TODO: Implement contact support functionality
+                
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(AppLocalizations.of(context)!.contactingSupport)),
                 );
