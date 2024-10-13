@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../services/notification_service.dart';
 import '../theme_notifier.dart';
+import '../language_notifier.dart';
 import 'login_page.dart';
 import 'search_kiosk_page.dart';
 import 'help_page.dart';
@@ -14,11 +15,12 @@ import 'notifications_page.dart';
 import 'admin_elevation_dialog.dart';
 import 'admin_panel.dart';
 import 'profile_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
-  AppUser user;
+    AppUser user;
 
-  HomePage({required this.user});
+   HomePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -100,7 +102,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         widget.user = AppUser.fromDocument(userDoc);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You are now an admin!')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.youAreNowAdmin)),
       );
     }
   }
@@ -110,12 +112,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Settings'),
+          title: Text(AppLocalizations.of(context)!.settings),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Dark Mode'),
+                title: Text(AppLocalizations.of(context)!.darkMode),
                 trailing: Consumer<ThemeNotifier>(
                   builder: (context, themeNotifier, child) {
                     return Switch(
@@ -128,12 +130,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   },
                 ),
               ),
-              // Add more settings options here
+              ListTile(
+                title: Text(AppLocalizations.of(context)!.language),
+                trailing: Consumer<LanguageNotifier>(
+                  builder: (context, languageNotifier, child) {
+                    return DropdownButton<String>(
+                      value: languageNotifier.locale.languageCode,
+                      items: [
+                        DropdownMenuItem(value: 'en', child: Text('English')),
+                        DropdownMenuItem(value: 'kn', child: Text('ಕನ್ನಡ')),
+                      ],
+                      onChanged: (String? value) {
+                        if (value != null) {
+                          languageNotifier.setLocale(Locale(value, ''));
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
           actions: [
             TextButton(
-              child: Text('Close'),
+              child: Text(AppLocalizations.of(context)!.close),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -177,94 +197,83 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-AppBar _buildAppBar() {
-  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-  final iconColor = isDarkMode ? Colors.white : Colors.deepPurple;
+  AppBar _buildAppBar() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDarkMode ? Colors.white : Colors.deepPurple;
 
-  return AppBar(
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    elevation: 0,
-    title: Text(
-      'Rbuy',
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: iconColor,
+    return AppBar(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      elevation: 0,
+      title: Text(
+        AppLocalizations.of(context)!.appTitle,
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: iconColor,
+        ),
       ),
-    ),
-    actions: [
-      IconButton(
-        icon: Icon(Icons.person, color: iconColor),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
-          );
-        },
-      ),
-      _buildNotificationButton(iconColor),
-      IconButton(
-        icon: Icon(Icons.settings, color: iconColor),
-        onPressed: _showSettingsDialog,
-      ),
-      IconButton(
-        icon: Icon(Icons.logout, color: iconColor),
-        onPressed: () async {
-          await FirebaseAuth.instance.signOut();
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => LoginPage()),
-          );
-        },
-      ),
-    ],
-  );
-}
+      actions: [
+        IconButton(
+          icon: Icon(Icons.person, color: iconColor),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage(user: widget.user)),
+            );
+          },
+        ),
+        _buildNotificationButton(iconColor),
+        IconButton(
+          icon: Icon(Icons.settings, color: iconColor),
+          onPressed: _showSettingsDialog,
+        ),
+        IconButton(
+          icon: Icon(Icons.logout, color: iconColor),
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
+          },
+        ),
+      ],
+    );
+  }
   
- Widget _buildNotificationButton(Color iconColor) {
-  return Stack(
-    children: <Widget>[
-      IconButton(
-        icon: Icon(Icons.notifications, color: iconColor),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NotificationsPage()),
-          );
-        },
-      ),
-      if (_unreadNotifications > 0)
-        Positioned(
-          right: 8,
-          top: 8,
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            constraints: const BoxConstraints(
-              minWidth: 14,
-              minHeight: 14,
-            ),
-            child: Text(
-              '$_unreadNotifications',
-              style: const TextStyle(color: Colors.white, fontSize: 8),
-              textAlign: TextAlign.center,
+  Widget _buildNotificationButton(Color iconColor) {
+    return Stack(
+      children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.notifications, color: iconColor),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NotificationsPage()),
+            );
+          },
+        ),
+        if (_unreadNotifications > 0)
+          Positioned(
+            right: 8,
+            top: 8,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              constraints: const BoxConstraints(
+                minWidth: 14,
+                minHeight: 14,
+              ),
+              child: Text(
+                '$_unreadNotifications',
+                style: const TextStyle(color: Colors.white, fontSize: 8),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-        ),
-    ],
-  );
-}
-  Widget _buildLogoutButton() {
-    return IconButton(
-      icon: Icon(Icons.logout, color: Theme.of(context).primaryColor),
-      onPressed: () async {
-        await FirebaseAuth.instance.signOut();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      },
+      ],
     );
   }
 
@@ -295,7 +304,7 @@ AppBar _buildAppBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Text(
-        'Welcome, ${widget.user.name}!',
+        AppLocalizations.of(context)!.welcome(widget.user.name),
         style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
@@ -327,21 +336,21 @@ AppBar _buildAppBar() {
         children: [
           _buildActionButton(
             icon: Icons.search,
-            label: 'Search for Kiosk',
+            label: AppLocalizations.of(context)!.searchForKiosk,
             color: Colors.deepPurple,
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SearchKioskPage())),
           ),
           const SizedBox(height: 20),
           _buildActionButton(
             icon: Icons.help_outline,
-            label: 'Help',
+            label: AppLocalizations.of(context)!.help,
             color: Colors.deepPurple[400]!,
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpPage())),
           ),
           const SizedBox(height: 20),
           _buildActionButton(
             icon: Icons.history,
-            label: 'Order History',
+            label: AppLocalizations.of(context)!.orderHistory,
             color: Colors.deepPurple[300]!,
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderHistoryPage())),
           ),
@@ -349,7 +358,7 @@ AppBar _buildAppBar() {
             const SizedBox(height: 20),
             _buildActionButton(
               icon: Icons.admin_panel_settings,
-              label: 'Admin Panel',
+              label: AppLocalizations.of(context)!.adminPanel,
               color: Colors.red[400]!,
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPanel(user: widget.user))),
             ),
@@ -358,7 +367,7 @@ AppBar _buildAppBar() {
             const SizedBox(height: 20),
             _buildActionButton(
               icon: Icons.admin_panel_settings,
-              label: 'Become an Admin',
+              label: AppLocalizations.of(context)!.becomeAdmin,
               color: Colors.deepPurple[200]!,
               onPressed: _showAdminElevationDialog,
             ),
@@ -458,8 +467,7 @@ class OrbitalPainter extends CustomPainter {
       final circlePaint = Paint()
         ..color = Colors.deepPurple.withOpacity(0.5 + (0.5 * sin(animation * 2 * pi)))
         ..style = PaintingStyle.fill;
-
-      canvas.drawCircle(endPoint, 5.0 + (3.0 * sin(animation * 2 * pi)), circlePaint);
+        canvas.drawCircle(endPoint, 5.0 + (3.0 * sin(animation * 2 * pi)), circlePaint);
     }
   }
 

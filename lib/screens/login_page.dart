@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import 'signup_page.dart';
 import 'home_page.dart';
-import 'admin_panel.dart';  // You'll need to create this file for the admin panel
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -18,73 +20,56 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future<void> _login() async {
-  print("Login button pressed"); // Debug print
-  if (_formKey.currentState!.validate()) {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      print("Attempting to sign in with email: ${_emailController.text.trim()}"); // Debug print
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-
-      print("User signed in successfully. UID: ${userCredential.user!.uid}"); // Debug print
-
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
-
-      if (userDoc.exists) {
-        print("User document found in Firestore"); // Debug print
-        AppUser appUser = AppUser.fromDocument(userDoc);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
-        );
-      } else {
-        print("User document not found in Firestore"); // Debug print
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User data not found. Please contact support.')),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      print("FirebaseAuthException: ${e.code} - ${e.message}"); // Debug print
-      String errorMessage = 'An error occurred. Please try again.';
-      switch (e.code) {
-        case 'user-not-found':
-          errorMessage = 'No user found for that email.';
-          break;
-        case 'wrong-password':
-          errorMessage = 'Wrong password provided for that user.';
-          break;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-    } catch (e) {
-      print("Unexpected error: $e"); // Debug print
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
-      );
-    } finally {
+    if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
+
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          AppUser appUser = AppUser.fromDocument(userDoc);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomePage(user: appUser)),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred)),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.invalidCredentials)),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorOccurred)),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Login',style: TextStyle(color: Colors.white),),
+        title: Text(AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: Colors.purple,  // Updated to purple
-        elevation: 0,
+        backgroundColor: Colors.purple,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -96,17 +81,17 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const SizedBox(height: 40),
                 Text(
-                  'Welcome Back!',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.welcomeBack,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.purple,  // Updated to purple
+                    color: Colors.purple,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Please log in to continue',
+                  AppLocalizations.of(context)!.pleaseLogIn,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -117,8 +102,8 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: Colors.purple),  // Updated to purple
+                    labelText: AppLocalizations.of(context)!.email,
+                    prefixIcon: const Icon(Icons.email, color: Colors.purple),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -128,10 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return AppLocalizations.of(context)!.errorOccurred;
                     }
                     return null;
                   },
@@ -140,8 +122,8 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock, color: Colors.purple),  // Updated to purple
+                    labelText: AppLocalizations.of(context)!.password,
+                    prefixIcon: const Icon(Icons.lock, color: Colors.purple),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -152,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return AppLocalizations.of(context)!.errorOccurred;
                     }
                     return null;
                   },
@@ -160,30 +142,30 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _login,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Login',style: TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.purple,  // Updated to purple
+                    backgroundColor: Colors.purple,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?"),
+                    Text(AppLocalizations.of(context)!.dontHaveAccount),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                          MaterialPageRoute(builder: (context) => const SignUpPage()),
                         );
                       },
-                      child: const Text('Sign up'),
+                      child: Text(AppLocalizations.of(context)!.signUp),
                     ),
                   ],
                 ),

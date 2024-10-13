@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'theme_notifier.dart';
 import 'screens/login_page.dart';
+import 'language_notifier.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => LanguageNotifier()),
+      ],
       child: MyApp(),
     ),
   );
@@ -19,8 +25,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeNotifier>(
-      builder: (context, themeNotifier, child) {
+    return Consumer2<ThemeNotifier, LanguageNotifier>(
+      builder: (context, themeNotifier, languageNotifier, child) {
         return MaterialApp(
           title: 'Rbuy - Refill as a Service',
           theme: ThemeData(
@@ -43,6 +49,17 @@ class MyApp extends StatelessWidget {
           ),
           themeMode: themeNotifier.themeMode,
           home: LoginPage(),
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            Locale('en', ''),
+            Locale('kn', ''),
+          ],
+          locale: languageNotifier.locale,
         );
       },
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HelpPage extends StatelessWidget {
   const HelpPage({super.key});
@@ -7,7 +8,7 @@ class HelpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Help Center'),
+        title: Text(AppLocalizations.of(context)!.helpCenter),
         elevation: 0,
       ),
       body: Container(
@@ -30,7 +31,7 @@ class HelpPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Frequently Asked Questions',
+                      AppLocalizations.of(context)!.frequentlyAskedQuestions,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,
@@ -39,18 +40,18 @@ class HelpPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     _buildFAQItem(
                       context,
-                      'How do I find a kiosk?',
-                      'You can find a kiosk by clicking on the "Search for Kiosk" button on the home page. This will show you a list of nearby kiosks.',
+                      AppLocalizations.of(context)!.howToFindKiosk,
+                      AppLocalizations.of(context)!.findKioskAnswer,
                     ),
                     _buildFAQItem(
                       context,
-                      'How do I place an order?',
-                      'After selecting a kiosk, you can choose a product and select the amount you want to refill. Follow the on-screen instructions to complete your order.',
+                      AppLocalizations.of(context)!.howToPlaceOrder,
+                      AppLocalizations.of(context)!.placeOrderAnswer,
                     ),
                     _buildFAQItem(
                       context,
-                      'What if I encounter an issue with my order?',
-                      'If you encounter any issues, please contact our customer support at support@rbuy.com or call us at 1-800-RBUY-HELP.',
+                      AppLocalizations.of(context)!.orderIssueQuestion,
+                      AppLocalizations.of(context)!.orderIssueAnswer,
                     ),
                   ],
                 ),
@@ -65,10 +66,10 @@ class HelpPage extends StatelessWidget {
               onPressed: () {
                 // TODO: Implement contact support functionality
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Contacting support...')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.contactingSupport)),
                 );
               },
-              child: const Text('Contact Support'),
+              child: Text(AppLocalizations.of(context)!.contactSupport),
             ),
           ],
         ),

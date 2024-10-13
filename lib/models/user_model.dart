@@ -8,6 +8,7 @@ class AppUser {
   bool isAdmin;
 
   AppUser({
+
     required this.id,
     required this.name,
     required this.email,

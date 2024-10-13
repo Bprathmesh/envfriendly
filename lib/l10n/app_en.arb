@@ -1,0 +1,198 @@
+{
+    "@@locale": "en",
+  
+    "appTitle": "Smart Refills",
+    "@appTitle": {
+      "description": "The title of the application"
+    },
+    "name": "Name",
+    "@name": {
+      "description": "Label for name input field"
+    },
+    "adminPassword": "Admin Password (optional)",
+    "@adminPassword": {
+      "description": "Label for admin password input field"
+    },
+    "createAccount": "Create Account",
+    "@createAccount": {
+      "description": "Button text for creating a new account"
+    },
+    "alreadyHaveAccount": "Already have an account?",
+    "@alreadyHaveAccount": {
+      "description": "Text asking if user already has an account"
+    },
+    "notifications": "Notifications",
+    "@notifications": {
+      "description": "Label for notifications section"
+    },
+    "profile": "Profile",
+    "@profile": {
+      "description": "Label for user profile"
+    },
+    "selectProduct": "Select Product",
+    "@selectProduct": {
+      "description": "Title for product selection page"
+    },
+    "searchProducts": "Search Products",
+    "@searchProducts": {
+      "description": "Placeholder for product search input"
+    },
+    "orderPlaced": "Order Placed Successfully!",
+    "@orderPlaced": {
+      "description": "Message shown when an order is successfully placed"
+    },
+    "proceedToKiosk": "Please proceed to the kiosk to collect your order.",
+    "@proceedToKiosk": {
+      "description": "Instruction to collect order from kiosk"
+    },
+    "login": "Login",
+    "@login": {
+      "description": "Button text for login action"
+    },
+    "email": "Email",
+    "@email": {
+      "description": "Label for email input field"
+    },
+    "password": "Password",
+    "@password": {
+      "description": "Label for password input field"
+    },
+    "signUp": "Sign Up",
+    "@signUp": {
+      "description": "Button text for sign up action"
+    },
+    "welcomeBack": "Welcome Back!",
+    "@welcomeBack": {
+      "description": "Greeting message on login page"
+    },
+    "pleaseLogIn": "Please log in to continue",
+    "@pleaseLogIn": {
+      "description": "Instruction to log in"
+    },
+    "errorOccurred": "An error occurred. Please try again.",
+    "@errorOccurred": {
+      "description": "Generic error message"
+    },
+    "invalidCredentials": "Invalid email or password.",
+    "@invalidCredentials": {
+      "description": "Error message for invalid login credentials"
+    },
+    "settings": "Settings",
+    "@settings": {
+      "description": "Label for settings section"
+    },
+    "darkMode": "Dark Mode",
+    "@darkMode": {
+      "description": "Label for dark mode toggle"
+    },
+    "language": "Language",
+    "@language": {
+      "description": "Label for language selection"
+    },
+    "close": "Close",
+    "@close": {
+      "description": "Button text to close a dialog or screen"
+    },
+    "searchForKiosk": "Search for Kiosk",
+    "@searchForKiosk": {
+      "description": "Button text to search for nearby kiosks"
+    },
+    "help": "Help",
+    "@help": {
+      "description": "Label for help section"
+    },
+    "orderHistory": "Order History",
+    "@orderHistory": {
+      "description": "Label for order history section"
+    },
+    "adminPanel": "Admin Panel",
+    "@adminPanel": {
+      "description": "Label for admin panel"
+    },
+    "becomeAdmin": "Become an Admin",
+    "@becomeAdmin": {
+      "description": "Button text to become an admin"
+    },
+    "logout": "Logout",
+    "@logout": {
+      "description": "Button text for logout action"
+    },
+    "dontHaveAccount": "Dont have an account?",
+    "@dontHaveAccount": {
+      "description": "Text asking if user doesn't have an account"
+    },
+    "welcome": "Welcome, {name}!",
+    "@welcome": {
+      "description": "Welcome message with user's name",
+      "placeholders": {
+        "name": {
+          "type": "String",
+          "example": "John"
+        }
+      }
+    },
+    "selectRefillAmount": "Select Refill Amount for {product}",
+    "@selectRefillAmount": {
+      "description": "Title for refill amount selection",
+      "placeholders": {
+        "product": {
+          "type": "String",
+          "example": "Water"
+        }
+      }
+    },
+    "errorPlacingOrder": "Error placing order: {error}",
+    "@errorPlacingOrder": {
+      "description": "Error message when placing an order fails",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Network error"
+        }
+      }
+    },
+    "youAreNowAdmin": "You are now an admin",
+    "@youAreNowAdmin": {
+      "description": "Message to indicate that user is now an admin"
+    },
+    "helpCenter": "Help Center",
+    "@helpCenter": {
+      "description": "Title for the help center page"
+    },
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
+    "@frequentlyAskedQuestions": {
+      "description": "Title for the FAQ section"
+    },
+    "howToFindKiosk": "How do I find a kiosk?",
+    "@howToFindKiosk": {
+      "description": "Question about finding a kiosk"
+    },
+    "findKioskAnswer": "You can find a kiosk by clicking on the \"Search for Kiosk\" button on the home page. This will show you a list of nearby kiosks.",
+    "@findKioskAnswer": {
+      "description": "Answer to how to find a kiosk"
+    },
+    "howToPlaceOrder": "How do I place an order?",
+    "@howToPlaceOrder": {
+      "description": "Question about placing an order"
+    },
+    "placeOrderAnswer": "After selecting a kiosk, you can choose a product and select the amount you want to refill. Follow the on-screen instructions to complete your order.",
+    "@placeOrderAnswer": {
+      "description": "Answer to how to place an order"
+    },
+    "orderIssueQuestion": "What if I encounter an issue with my order?",
+    "@orderIssueQuestion": {
+      "description": "Question about order issues"
+    },
+    "orderIssueAnswer": "If you encounter any issues, please contact our customer support at support@rbuy.com or call us at 1-800-RBUY-HELP.",
+    "@orderIssueAnswer": {
+      "description": "Answer to what to do if there's an issue with an order"
+    },
+    "contactSupport": "Contact Support",
+    "@contactSupport": {
+      "description": "Button text to contact support"
+    },
+    "contactingSupport": "Contacting support...",
+    "@contactingSupport": {
+      "description": "Message shown when contacting support"
+    }
+  }

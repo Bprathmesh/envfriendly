@@ -1,0 +1,198 @@
+{
+    "@@locale": "kn",
+  
+    "appTitle": "ಸ್ಮಾರ್ಟ್ ರೀಫಿಲ್ಸ್",
+    "@appTitle": {
+      "description": "The title of the application"
+    },
+    "name": "ಹೆಸರು",
+    "@name": {
+      "description": "Label for name input field"
+    },
+    "adminPassword": "ನಿರ್ವಾಹಕ ಪಾಸ್‌ವರ್ಡ್ (ಐಚ್ಛಿಕ)",
+    "@adminPassword": {
+      "description": "Label for admin password input field"
+    },
+    "createAccount": "ಖಾತೆ ಸೃಷ್ಟಿಸಿ",
+    "@createAccount": {
+      "description": "Button text for creating a new account"
+    },
+    "alreadyHaveAccount": "ಈಗಾಗಲೇ ಖಾತೆ ಇದೆಯೇ?",
+    "@alreadyHaveAccount": {
+      "description": "Text asking if user already has an account"
+    },
+    "notifications": "ಅಧಿಸೂಚನೆಗಳು",
+    "@notifications": {
+      "description": "Label for notifications section"
+    },
+    "profile": "ಪ್ರೊಫೈಲ್",
+    "@profile": {
+      "description": "Label for user profile"
+    },
+    "selectProduct": "ಉತ್ಪನ್ನವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    "@selectProduct": {
+      "description": "Title for product selection page"
+    },
+    "searchProducts": "ಉತ್ಪನ್ನಗಳನ್ನು ಹುಡುಕಿ",
+    "@searchProducts": {
+      "description": "Placeholder for product search input"
+    },
+    "orderPlaced": "ಆದೇಶವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನೀಡಲಾಗಿದೆ!",
+    "@orderPlaced": {
+      "description": "Message shown when an order is successfully placed"
+    },
+    "proceedToKiosk": "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಆದೇಶವನ್ನು ಸಂಗ್ರಹಿಸಲು ಕಿಯೋಸ್ಕ್‌ಗೆ ಮುಂದುವರಿಯಿರಿ.",
+    "@proceedToKiosk": {
+      "description": "Instruction to collect order from kiosk"
+    },
+    "login": "ಲಾಗಿನ್",
+    "@login": {
+      "description": "Button text for login action"
+    },
+    "email": "ಇಮೇಲ್",
+    "@email": {
+      "description": "Label for email input field"
+    },
+    "password": "ಪಾಸ್‌ವರ್ಡ್",
+    "@password": {
+      "description": "Label for password input field"
+    },
+    "signUp": "ಸೈನ್ ಅಪ್",
+    "@signUp": {
+      "description": "Button text for sign up action"
+    },
+    "welcomeBack": "ಮರಳಿ ಸ್ವಾಗತ!",
+    "@welcomeBack": {
+      "description": "Greeting message on login page"
+    },
+    "pleaseLogIn": "ಮುಂದುವರಿಯಲು ದಯವಿಟ್ಟು ಲಾಗ್ ಇನ್ ಮಾಡಿ",
+    "@pleaseLogIn": {
+      "description": "Instruction to log in"
+    },
+    "errorOccurred": "ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "@errorOccurred": {
+      "description": "Generic error message"
+    },
+    "invalidCredentials": "ಅಮಾನ್ಯ ಇಮೇಲ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್.",
+    "@invalidCredentials": {
+      "description": "Error message for invalid login credentials"
+    },
+    "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+    "@settings": {
+      "description": "Label for settings section"
+    },
+    "darkMode": "ಡಾರ್ಕ್ ಮೋಡ್",
+    "@darkMode": {
+      "description": "Label for dark mode toggle"
+    },
+    "language": "ಭಾಷೆ",
+    "@language": {
+      "description": "Label for language selection"
+    },
+    "close": "ಮುಚ್ಚಿರಿ",
+    "@close": {
+      "description": "Button text to close a dialog or screen"
+    },
+    "searchForKiosk": "ಕಿಯೋಸ್ಕ್ ಹುಡುಕಿ",
+    "@searchForKiosk": {
+      "description": "Button text to search for nearby kiosks"
+    },
+    "help": "ಸಹಾಯ",
+    "@help": {
+      "description": "Label for help section"
+    },
+    "orderHistory": "ಆದೇಶ ಇತಿಹಾಸ",
+    "@orderHistory": {
+      "description": "Label for order history section"
+    },
+    "adminPanel": "ನಿರ್ವಾಹಕ ಪ್ಯಾನೆಲ್",
+    "@adminPanel": {
+      "description": "Label for admin panel"
+    },
+    "becomeAdmin": "ನಿರ್ವಾಹಕರಾಗಿ",
+    "@becomeAdmin": {
+      "description": "Button text to become an admin"
+    },
+    "logout": "ಲಾಗ್ ಔಟ್",
+    "@logout": {
+      "description": "Button text for logout action"
+    },
+    "dontHaveAccount": "ಖಾತೆ ಇಲ್ಲವೇ?",
+    "@dontHaveAccount": {
+      "description": "Text asking if user doesn't have an account"
+    },
+    "welcome": "ಸ್ವಾಗತ, {name}!",
+    "@welcome": {
+      "description": "Welcome message with user's name",
+      "placeholders": {
+        "name": {
+          "type": "String",
+          "example": "John"
+        }
+      }
+    },
+    "selectRefillAmount": "{product}ಗಾಗಿ ಮರುಪೂರಣ ಪ್ರಮಾಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    "@selectRefillAmount": {
+      "description": "Title for refill amount selection",
+      "placeholders": {
+        "product": {
+          "type": "String",
+          "example": "Water"
+        }
+      }
+    },
+    "errorPlacingOrder": "ಆದೇಶ ನೀಡುವಲ್ಲಿ ದೋಷ: {error}",
+    "@errorPlacingOrder": {
+      "description": "Error message when placing an order fails",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Network error"
+        }
+      }
+    },
+    "youAreNowAdmin": "ನೀವು ಈಗ ನಿರ್ವಾಹಕರಾಗಿದ್ದೀರಿ",
+    "@youAreNowAdmin": {
+      "description": "Message to indicate that user is now an admin"
+    },
+    "helpCenter": "ಸಹಾಯ ಕೇಂದ್ರ",
+    "@helpCenter": {
+      "description": "Title for the help center page"
+    },
+    "frequentlyAskedQuestions": "ಪದೇ ಪದೇ ಕೇಳಲಾಗುವ ಪ್ರಶ್ನೆಗಳು",
+    "@frequentlyAskedQuestions": {
+      "description": "Title for the FAQ section"
+    },
+    "howToFindKiosk": "ನಾನು ಕಿಯೋಸ್ಕ್ ಅನ್ನು ಹೇಗೆ ಕಂಡುಹಿಡಿಯಬಹುದು?",
+    "@howToFindKiosk": {
+      "description": "Question about finding a kiosk"
+    },
+    "findKioskAnswer": "ಮುಖಪುಟದಲ್ಲಿರುವ \"ಕಿಯೋಸ್ಕ್ ಹುಡುಕಿ\" ಬಟನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಕಿಯೋಸ್ಕ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಬಹುದು. ಇದು ನಿಮಗೆ ಹತ್ತಿರದ ಕಿಯೋಸ್ಕ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸುತ್ತದೆ.",
+    "@findKioskAnswer": {
+      "description": "Answer to how to find a kiosk"
+    },
+    "howToPlaceOrder": "ನಾನು ಆದೇಶವನ್ನು ಹೇಗೆ ನೀಡಬಹುದು?",
+    "@howToPlaceOrder": {
+      "description": "Question about placing an order"
+    },
+    "placeOrderAnswer": "ಕಿಯೋಸ್ಕ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ ನಂತರ, ನೀವು ಉತ್ಪನ್ನವನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು ಮತ್ತು ನೀವು ಮರುಪೂರಣ ಮಾಡಲು ಬಯಸುವ ಪ್ರಮಾಣವನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಆದೇಶವನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.",
+    "@placeOrderAnswer": {
+      "description": "Answer to how to place an order"
+    },
+    "orderIssueQuestion": "ನನ್ನ ಆದೇಶದಲ್ಲಿ ಸಮಸ್ಯೆ ಎದುರಾದರೆ ಏನು ಮಾಡಬೇಕು?",
+    "@orderIssueQuestion": {
+      "description": "Question about order issues"
+    },
+    "orderIssueAnswer": "ನೀವು ಯಾವುದೇ ಸಮಸ್ಯೆಗಳನ್ನು ಎದುರಿಸಿದರೆ, ದಯವಿಟ್ಟು ನಮ್ಮ ಗ್ರಾಹಕ ಬೆಂಬಲವನ್ನು support@rbuy.com ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ ಅಥವಾ 1-800-RBUY-HELP ಗೆ ಕರೆ ಮಾಡಿ.",
+    "@orderIssueAnswer": {
+      "description": "Answer to what to do if there's an issue with an order"
+    },
+    "contactSupport": "ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ",
+    "@contactSupport": {
+      "description": "Button text to contact support"
+    },
+    "contactingSupport": "ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...",
+    "@contactingSupport": {
+      "description": "Message shown when contacting support"
+    }
+}
