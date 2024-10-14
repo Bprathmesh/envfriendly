@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -60,13 +62,13 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
   Future<void> _fetchChartData() async {
     // This would typically come from Firebase Analytics
     _chartData = [
-      FlSpot(0, 5),
-      FlSpot(1, 25),
-      FlSpot(2, 100),
-      FlSpot(3, 75),
-      FlSpot(4, 55),
-      FlSpot(5, 45),
-      FlSpot(6, 20),
+      const FlSpot(0, 5),
+      const FlSpot(1, 25),
+      const FlSpot(2, 100),
+      const FlSpot(3, 75),
+      const FlSpot(4, 55),
+      const FlSpot(5, 45),
+      const FlSpot(6, 20),
     ];
 
     setState(() {});
@@ -75,7 +77,8 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
   Future<void> _sendNotification() async {
     if (_notificationController.text.isNotEmpty) {
       await FirebaseFirestore.instance.collection('notifications').add({
-        'message': _notificationController.text,
+        'title': 'New Notification',
+        'body': _notificationController.text,
         'timestamp': FieldValue.serverTimestamp(),
         'read': false,
       });
@@ -85,7 +88,6 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
       _notificationController.clear();
     }
   }
-
   Future<void> _toggleUserAdminStatus(String userId, bool currentStatus) async {
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'isAdmin': !currentStatus,
@@ -191,9 +193,9 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
       height: 300,
       child: LineChart(
         LineChartData(
-          gridData: FlGridData(show: false),
+          gridData: const FlGridData(show: false),
           titlesData: FlTitlesData(
-            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -216,7 +218,7 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
               color: Colors.blue,
               barWidth: 3,
               isStrokeCapRound: true,
-              dotData: FlDotData(show: false),
+              dotData: const FlDotData(show: false),
               belowBarData: BarAreaData(show: false),
             ),
           ],

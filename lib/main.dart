@@ -1,3 +1,4 @@
+import 'package:envfriendly/services/push_notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,32 +19,7 @@ void main() async {
   // Use the conditionally imported function
   configureApp();
 
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyDFyd958Ya6qK3SGrLaacJQeoAd4-dk7yU",
-        authDomain: "envfriendly.firebaseapp.com",
-        projectId: "envfriendly",
-        storageBucket: "envfriendly.appspot.com",
-        messagingSenderId: "34450201762",
-        appId: "1:34450201762:web:dba2dcbb321d6c39decbfb",
-      ),
-    );
-  } else {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  }
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
-        ChangeNotifierProvider(create: (_) => LanguageNotifier()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -51,43 +27,95 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeNotifier, LanguageNotifier>(
-      builder: (context, themeNotifier, languageNotifier, child) {
+    return FutureBuilder(
+      future: _initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              ),
+            );
+          }
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+              ChangeNotifierProvider(create: (_) => LanguageNotifier()),
+            ],
+            child: Consumer2<ThemeNotifier, LanguageNotifier>(
+              builder: (context, themeNotifier, languageNotifier, child) {
+                return MaterialApp(
+                  title: 'Rbuy - Refill as a Service',
+                  theme: ThemeData(
+                    primarySwatch: Colors.deepPurple,
+                    brightness: Brightness.light,
+                    scaffoldBackgroundColor: Colors.white,
+                    appBarTheme: const AppBarTheme(
+                      backgroundColor: Colors.white,
+                      iconTheme: IconThemeData(color: Colors.deepPurple),
+                    ),
+                  ),
+                  darkTheme: ThemeData(
+                    primarySwatch: Colors.deepPurple,
+                    brightness: Brightness.dark,
+                    scaffoldBackgroundColor: Colors.grey[900],
+                    appBarTheme: AppBarTheme(
+                      backgroundColor: Colors.grey[900],
+                      iconTheme: const IconThemeData(color: Colors.white),
+                    ),
+                  ),
+                  themeMode: themeNotifier.themeMode,
+                  home: const LoginPage(),
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: const [
+                    Locale('en', ''),
+                    Locale('kn', ''),
+                  ],
+                  locale: languageNotifier.locale,
+                );
+              },
+            ),
+          );
+        }
+        // While waiting for initialization, show loading screen
         return MaterialApp(
-          title: 'Rbuy - Refill as a Service',
-          theme: ThemeData(
-            primarySwatch: Colors.deepPurple,
-            brightness: Brightness.light,
-            scaffoldBackgroundColor: Colors.white,
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.white,
-              iconTheme: IconThemeData(color: Colors.deepPurple),
+          home: Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
             ),
           ),
-          darkTheme: ThemeData(
-            primarySwatch: Colors.deepPurple,
-            brightness: Brightness.dark,
-            scaffoldBackgroundColor: Colors.grey[900],
-            appBarTheme: AppBarTheme(
-              backgroundColor: Colors.grey[900],
-              iconTheme: const IconThemeData(color: Colors.white),
-            ),
-          ),
-          themeMode: themeNotifier.themeMode,
-          home: const LoginPage(),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''),
-            Locale('kn', ''),
-          ],
-          locale: languageNotifier.locale,
         );
       },
     );
+  }
+
+  Future<void> _initializeApp() async {
+    if (kIsWeb) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyDFyd958Ya6qK3SGrLaacJQeoAd4-dk7yU",
+          authDomain: "envfriendly.firebaseapp.com",
+          projectId: "envfriendly",
+          storageBucket: "envfriendly.appspot.com",
+          messagingSenderId: "34450201762",
+          appId: "1:34450201762:web:dba2dcbb321d6c39decbfb",
+        ),
+      );
+    } else {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+
+    PushNotificationService notificationService = PushNotificationService();
+    await notificationService.initialize();
   }
 }

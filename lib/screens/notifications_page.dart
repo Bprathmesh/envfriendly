@@ -2,11 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../services/notification_service.dart';
+import '../services/push_notification_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class NotificationsPage extends StatelessWidget {
+class NotificationsPage extends StatefulWidget {
   const NotificationsPage({Key? key}) : super(key: key);
+
+  @override
+  _NotificationsPageState createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  late PushNotificationService _pushNotificationService;
+
+  @override
+  void initState() {
+    super.initState();
+    _pushNotificationService = PushNotificationService();
+    _pushNotificationService.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +86,7 @@ class NotificationsPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               // Trigger a rebuild of the StreamBuilder
-              (context as Element).markNeedsBuild();
+              setState(() {});
             },
             child: Text(AppLocalizations.of(context)!.tryAgain),
           ),
@@ -123,7 +138,7 @@ class NotificationsPage extends StatelessWidget {
       ),
       child: ListTile(
         title: Text(
-          data['message'],
+          data['body'] ?? data['message'],
           style: TextStyle(
             fontWeight: data['read'] ? FontWeight.normal : FontWeight.bold,
           ),
